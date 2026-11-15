@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Study Hub (ज्ञान सागर)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
     body { background: #f4f7fb; color: #222; display: flex; flex-direction: column; min-height: 100vh; }
@@ -39,7 +40,6 @@
     .exp-box { display: none; margin-top: 10px; padding: 10px 12px; background: #fffbe6; border-left: 4px solid #f5b800; font-size: 0.9rem; border-radius: 4px; }
     .score-banner { background: #163b73; color: #fff; padding: 14px 18px; border-radius: 8px; font-weight: 700; margin-bottom: 18px; display: flex; justify-content: space-between; }
 
-    /* Photo Upload & Ad Gate */
     .upload-zone { border: 2px dashed #1e4d92; background: #f4f8ff; border-radius: 12px; padding: 26px 16px; text-align: center; margin: 16px 0; cursor: pointer; }
     .upload-zone:hover { background: #e8f1ff; }
     .preview-img { max-width: 100%; max-height: 260px; border-radius: 8px; margin-top: 12px; border: 1px solid #ccc; }
@@ -47,17 +47,10 @@
     .ad-card { background: #fff; max-width: 460px; width: 100%; border-radius: 14px; padding: 22px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
     .ad-banner { background: linear-gradient(135deg, #ff9800, #f44336); color: #fff; padding: 26px 16px; border-radius: 10px; margin: 14px 0; }
     .ad-timer { font-size: 1.05rem; font-weight: 700; color: #163b73; margin-top: 10px; }
-    .ans-result { white-space: pre-wrap; line-height: 1.65; background: #f9fbff; border: 1px solid #d5e1f2; padding: 20px; border-radius: 10px; font-size: 0.98rem; margin-top: 16px; }
+    .pdf-sheet { background: #fff; border: 1px solid #d5e1f2; padding: 24px; border-radius: 10px; margin-top: 16px; }
+    .ans-result { white-space: pre-wrap; line-height: 1.7; font-size: 1rem; color: #1a1a1a; margin-top: 12px; }
 
     footer { background: #163b73; color: #fff; text-align: center; padding: 18px 12px; font-size: 0.92rem; margin-top: auto; }
-
-    /* Print / PDF Styles */
-    @media print {
-      header, .nav-bar, .filter-bar, footer, .no-print { display: none !important; }
-      body { background: #fff; }
-      .ak-box { box-shadow: none; padding: 0; }
-      .ans-result { border: none; background: #fff; font-size: 11pt; }
-    }
   </style>
 </head>
 <body>
@@ -167,28 +160,25 @@
         return;
       }
 
-      // फोटो से AI उत्तर कुंजी + विज्ञापन + PDF डाउनलोड
       if (tab === "answers") {
         uploadedBase64 = "";
         box.innerHTML = `
           <div class="ak-box">
-            <div class="no-print">
-              <h2 style="color:#163b73; margin-bottom:8px;">📸 फोटो डालें और पूरे पेपर की उत्तर कुंजी (PDF) पाएं</h2>
-              <p style="color:#555;">अपनी किसी भी कक्षा या परीक्षा के प्रश्न पत्र की साफ फोटो चुनें — छोटा सा विज्ञापन देखने के बाद AI सभी प्रश्नों के सटीक उत्तर तैयार कर देगा जिन्हें आप PDF में सेव कर सकते हैं।</p>
-              
-              <div class="upload-zone" onclick="document.getElementById('paper-photo').click()">
-                <div style="font-size:2.2rem; margin-bottom:6px;">📷</div>
-                <strong style="color:#163b73; font-size:1.05rem;">यहाँ क्लिक करके प्रश्न पत्र की फोटो चुनें</strong>
-                <p style="font-size:0.85rem; color:#666; margin-top:4px;">(JPG, PNG या मोबाइल कैमरा फोटो)</p>
-                <input type="file" id="paper-photo" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
-                <img id="photo-preview" class="preview-img" style="display:none;">
-              </div>
+            <h2 style="color:#163b73; margin-bottom:8px;">📸 फोटो डालें और पूरे पेपर की उत्तर कुंजी (PDF) डाउनलोड करें</h2>
+            <p style="color:#555;">अपने प्रश्न पत्र की साफ फोटो चुनें — 15 सेकंड का विज्ञापन देखने के बाद AI सभी प्रश्नों के सटीक उत्तर तैयार कर देगा जिन्हें आप सीधे <strong>PDF फाइल</strong> में डाउनलोड कर सकेंगे।</p>
+            
+            <div class="upload-zone" onclick="document.getElementById('paper-photo').click()">
+              <div style="font-size:2.2rem; margin-bottom:6px;">📷</div>
+              <strong style="color:#163b73; font-size:1.05rem;">यहाँ क्लिक करके प्रश्न पत्र की फोटो चुनें</strong>
+              <p style="font-size:0.85rem; color:#666; margin-top:4px;">(JPG, PNG या मोबाइल कैमरा फोटो)</p>
+              <input type="file" id="paper-photo" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+              <img id="photo-preview" class="preview-img" style="display:none;">
+            </div>
 
-              <div id="solve-btn-wrap" style="text-align:center; display:none; margin-top:14px;">
-                <button class="action-btn quiz-btn" style="font-size:1.05rem; padding:13px 24px;" onclick="startAdAndSolve()">
-                  📺 विज्ञापन देखें और उत्तर कुंजी बनाएं (15 सेकंड)
-                </button>
-              </div>
+            <div id="solve-btn-wrap" style="text-align:center; display:none; margin-top:14px;">
+              <button class="action-btn quiz-btn" style="font-size:1.05rem; padding:13px 24px;" onclick="startAdAndSolve()">
+                📺 विज्ञापन देखें और उत्तर कुंजी बनाएं (15 सेकंड)
+              </button>
             </div>
 
             <div id="ai-answer-output"></div>
@@ -211,7 +201,6 @@
         </div>`).join("") + `</div>`;
     }
 
-    // फोटो को हल्का और तेज़ बनाकर पढ़ना ताकि तुरंत अपलोड हो
     function handleImageUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -220,12 +209,12 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxW = 1200;
+          const maxW = 1000;
           const scale = img.width > maxW ? maxW / img.width : 1;
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
           canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
           uploadedBase64 = dataUrl.split(",")[1];
           uploadedMime = "image/jpeg";
 
@@ -239,7 +228,6 @@
       reader.readAsDataURL(file);
     }
 
-    // विज्ञापन दिखाने के साथ-साथ बैकग्राउंड में AI से उत्तर तैयार करवाना
     function startAdAndSolve() {
       if (!uploadedBase64) return;
       let sec = 15;
@@ -266,7 +254,7 @@
         const btn = document.getElementById("ad-close-btn");
         if (!adDone) return;
         if (!aiDone) {
-          if (cd) cd.innerText = "🤖 AI आपके प्रश्न पत्र के उत्तर लिख रहा है (2-3 सेकंड)...";
+          if (cd) cd.innerText = "🤖 AI आपके प्रश्न पत्र के उत्तर लिख रहा है (3-4 सेकंड)...";
           return;
         }
         if (cd) cd.innerText = "🎉 आपकी उत्तर कुंजी तैयार है!";
@@ -281,10 +269,18 @@
               out.innerHTML = `
                 <div style="margin-top:22px; border-top:2px solid #eee; padding-top:18px;">
                   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <h3 style="color:#155724;">✅ All Study Hub — आधिकारिक AI उत्तर कुंजी</h3>
-                    <button class="action-btn no-print" style="background:#28a745;" onclick="window.print()">📥 PDF डाउनलोड / प्रिंट करें</button>
+                    <h3 style="color:#155724;">✅ उत्तर कुंजी तैयार है!</h3>
+                    <button id="dl-pdf-btn" class="action-btn" style="background:#28a745; font-size:1rem; padding:11px 20px;" onclick="downloadAnswerPDF()">
+                      📥 सीधे PDF डाउनलोड करें
+                    </button>
                   </div>
-                  <div class="ans-result">${solvedText}</div>
+                  <div id="pdf-content-box" class="pdf-sheet">
+                    <div style="border-bottom:2px solid #163b73; padding-bottom:10px; margin-bottom:14px;">
+                      <h2 style="color:#163b73;">📚 All Study Hub (ज्ञान सागर) — उत्तर कुंजी</h2>
+                      <p style="font-size:0.85rem; color:#555;">Generated by All Study Hub AI • vashumehra.github.io/exam-guide</p>
+                    </div>
+                    <div class="ans-result">${solvedText}</div>
+                  </div>
                 </div>`;
               out.scrollIntoView({ behavior: "smooth" });
             }
@@ -292,7 +288,6 @@
         }
       }
 
-      // 15 सेकंड का टाइमर
       const timer = setInterval(() => {
         sec--;
         const cd = document.getElementById("ad-countdown");
@@ -305,9 +300,9 @@
         }
       }, 1000);
 
-      // बैकग्राउंड में AI को फोटो भेजना
       fetch(liveAPI, {
         method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ image: uploadedBase64, mimeType: uploadedMime })
       })
       .then(r => r.json())
@@ -319,12 +314,37 @@
       })
       .catch(e => {
         aiDone = true;
-        errMsg = "नेटवर्क व्यस्त है, कृपया पुनः प्रयास करें।";
+        errMsg = "कृपया एक बार पुनः प्रयास करें (" + e.message + ")";
         checkReady();
       });
     }
 
-    // AI क्विज़ प्लेयर
+    function downloadAnswerPDF() {
+      const btn = document.getElementById("dl-pdf-btn");
+      const element = document.getElementById("pdf-content-box");
+      if (!element) return;
+
+      btn.disabled = true;
+      btn.innerText = "⏳ PDF बन रही है...";
+
+      const opt = {
+        margin: 10,
+        filename: "All_Study_Hub_Answer_Key.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        btn.disabled = false;
+        btn.innerText = "✅ PDF डाउनलोड हो गई (दोबारा डाउनलोड करें)";
+      }).catch(() => {
+        window.print();
+        btn.disabled = false;
+        btn.innerText = "📥 सीधे PDF डाउनलोड करें";
+      });
+    }
+
     function startQuiz(name) {
       curTitle = name; activeQ = quizzes[name] || []; score = 0; done = 0;
       const labels = ["A", "B", "C", "D"];
