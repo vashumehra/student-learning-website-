@@ -261,16 +261,17 @@
   </footer>
 
   <script>
-    // 1. आपकी Google Sheets के लाइव CSV लिंक
+    // 1. आपकी Google Sheets और Live AI Web App के लिंक
     const formResponsesCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=0&single=true&output=csv";
     const quizSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=1004850232&single=true&output=csv";
+    const liveAIQuizAPI = "https://script.google.com/macros/s/AKfycbxYdDIDsIW4D4KM2_6Yv1CFKj7UdIf5TRcYCMxplDAeNLcXxEfrLRRPIQtY1k--mTWhDA/exec";
 
     let currentTab = "quiz";
     let currentClass = "all";
     let allMaterials = [];
-    let allQuizzes = {}; // { "Test Name": [ {q, opts, ans, exp}, ... ] }
+    let allQuizzes = {};
 
-    // सुरक्षित CSV पार्सर (कॉमा और कोट्स वाले हिंदी वाक्यों को सही से पढ़ता है)
+    // सुरक्षित CSV पार्सर
     function parseCSV(text) {
       const rows = [];
       let row = [], cell = "", inQuotes = false;
@@ -293,10 +294,8 @@
       return rows;
     }
 
-    // दोनों शीट से डेटा लोड करना
     async function loadAllData() {
       try {
-        // AI Tests लोड करें
         const qRes = await fetch(quizSheetCSV + "&t=" + Date.now());
         const qText = await qRes.text();
         const qRows = parseCSV(qText);
@@ -317,7 +316,6 @@
           });
         }
 
-        // Form Responses (नोट्स/पेपर/क्लास) लोड करें
         try {
           const mRes = await fetch(formResponsesCSV + "&t=" + Date.now());
           const mText = await mRes.text();
@@ -356,7 +354,6 @@
       renderView();
     }
 
-    // स्मार्ट कक्षा मिलान (ताकि "Class 12th Hindi Test 1" अपने आप "कक्षा 11-12" में भी दिखे)
     function matchesClass(text, filter) {
       if (filter === "all") return true;
       const t = text.toLowerCase();
@@ -372,7 +369,6 @@
     function renderView() {
       const container = document.getElementById("content-area");
 
-      // 1. AI ऑनलाइन टेस्ट सेक्शन
       if (currentTab === "quiz") {
         const testNames = Object.keys(allQuizzes).filter(name => matchesClass(name, currentClass));
         if (testNames.length === 0) {
@@ -399,7 +395,6 @@
         return;
       }
 
-      // 2. नोट्स / क्लास / प्रश्न पत्र / उत्तर कुंजी
       const filtered = allMaterials.filter(item => {
         const fullText = (item.cls + " " + item.title + " " + item.desc).toLowerCase();
         if (!matchesClass(fullText, currentClass)) return false;
@@ -407,7 +402,7 @@
         if (currentTab === "papers") return /paper|प्रश्न|मॉडल|exam/.test(fullText);
         if (currentTab === "answers") return /answer|उत्तर|solution|हल/.test(fullText);
         if (currentTab === "classes") return /youtube|youtu\.be|class|वीडियो|क्लास/.test(fullText + " " + item.link.toLowerCase());
-        return true; // notes में सभी उपयोगी सामग्री दिखाएं
+        return true;
       });
 
       if (filtered.length === 0) {
@@ -434,12 +429,14 @@
       container.innerHTML = html;
     }
 
-    // इंटरैक्टिव क्विज़ प्लेयर
+    // इंटरैक्टिव क्विज़ प्लेयर + लाइव नए प्रश्न जेनरेटर
     let activeQuizQuestions = [];
+    let currentTestTitle = "";
     let userScore = 0;
     let answeredCount = 0;
 
     function startQuiz(testName) {
+      currentTestTitle = testName;
       activeQuizQuestions = allQuizzes[testName] || [];
       userScore = 0;
       answeredCount = 0;
@@ -492,9 +489,63 @@
       answeredCount++;
       document.getElementById("live-score").innerText = `आपका स्कोर: ${userScore} / ${activeQuizQuestions.length}`;
       document.getElementById(`exp-${qIdx}`).style.display = "block";
+
+      // जब छात्र सभी प्रश्नों के उत्तर दे दे (या पूरे 10/10 सही कर दे)
+      if (answeredCount === activeQuizQuestions.length) {
+        const isPerfect = userScore === activeQuizQuestions.length;
+        const msg = isPerfect
+          ? `🏆 अद्भुत! आपने सभी ${userScore}/${activeQuizQuestions.length} उत्तर बिल्कुल सही दिए हैं!`
+          : `✅ टेस्ट पूरा हुआ! आपका कुल स्कोर: ${userScore} / ${activeQuizQuestions.length}`;
+
+        const resultCard = document.createElement("div");
+        resultCard.style.cssText = "margin-top:24px; padding:22px; background:#e8f5e9; border:2px solid #28a745; border-radius:12px; text-align:center;";
+        resultCard.innerHTML = `
+          <h3 style="color:#155724; margin-bottom:10px;">${msg}</h3>
+          <p style="margin-bottom:16px; color:#333;">क्या आप इसी विषय पर 10 बिल्कुल नए प्रश्न हल करना चाहते हैं?</p>
+          <button id="new-q-btn" class="action-btn quiz-btn" style="font-size:1.05rem; padding:12px 22px; margin:5px;" onclick="generateNewQuestionsLive()">
+            ⚡ 10 नए प्रश्न बनाएं (New Questions)
+          </button>
+          <button class="back-btn" style="padding:12px 18px; margin:5px;" onclick="startQuiz(currentTestTitle)">
+            🔄 यही टेस्ट फिर से दें
+          </button>
+        `;
+        document.querySelector(".quiz-box").appendChild(resultCard);
+        resultCard.scrollIntoView({ behavior: "smooth" });
+      }
     }
 
-    // पेज खुलते ही डेटा लोड करें
+    async function generateNewQuestionsLive() {
+      const btn = document.getElementById("new-q-btn");
+      btn.disabled = true;
+      btn.innerText = "⏳ AI 10 नए प्रश्न तैयार कर रहा है (5-8 सेकंड)...";
+
+      try {
+        const res = await fetch(liveAIQuizAPI, {
+          method: "POST",
+          body: JSON.stringify({ topic: currentTestTitle })
+        });
+        const data = await res.json();
+
+        if (data.status === "success" && data.questions) {
+          const newTitle = currentTestTitle.replace(" (New Set)", "") + " (New Set)";
+          allQuizzes[newTitle] = data.questions.map(q => ({
+            q: q.question,
+            opts: [q.optA, q.optB, q.optC, q.optD],
+            ansInfo: q.answerInfo
+          }));
+          startQuiz(newTitle);
+        } else {
+          alert("नए प्रश्न बनाने में त्रुटि आई, कृपया पुनः प्रयास करें।");
+          btn.disabled = false;
+          btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
+        }
+      } catch (e) {
+        alert("नेटवर्क त्रुटि: " + e.message);
+        btn.disabled = false;
+        btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
+      }
+    }
+
     loadAllData();
   </script>
 </body>
