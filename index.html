@@ -1,274 +1,191 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academic Paper Formatter to DOCX</title>
-  <!-- docx library for direct browser-side docx generation -->
-  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
-      color: #1e293b;
-      padding: 24px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 32px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-    h1 {
-      font-size: 22px;
-      color: #0f172a;
-      margin-bottom: 6px;
-    }
-    p.desc {
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 18px;
-    }
-    textarea {
-      width: 100%;
-      height: 380px;
-      padding: 14px;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      outline: none;
-      resize: vertical;
-    }
-    textarea:focus {
-      border-color: #2563eb;
-    }
-    .actions {
-      margin-top: 18px;
-      display: flex;
-      justify-content: flex-end;
-    }
-    button {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      padding: 12px 28px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
-    .rules-list {
-      margin-top: 20px;
-      padding: 14px 18px;
-      background: #f8fafc;
-      border-left: 4px solid #2563eb;
-      font-size: 13px;
-      color: #475569;
-      line-height: 1.6;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>स्मार्ट स्टडी नोट्स - कक्षा 11वीं व 12वीं</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+        /* ऊपर का हेडर */
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+        /* नेविगेशन बार */
+        nav {
+            background-color: #162b52;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        /* मुख्य कंटेनर */
+        .container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+        /* नोट्स कार्ड */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid #2a5298;
+        }
+        .card h2 {
+            color: #1e3c72;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #2a5298;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #1e3c72;
+        }
+        /* कमाई का सेक्शन (Refer & Earn - बिना Ad के) */
+        .partner-box {
+            background: #e8f4fd;
+            border: 1px dashed #2a5298;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .partner-box h3 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+        .btn-green {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 22px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        /* फुटर और सर्विस प्रमोशन */
+        footer {
+            background-color: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+            margin-top: 40px;
+        }
+        .service-offer {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto 15px auto;
+        }
+        .service-offer a {
+            color: #ffd700;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Academic Paper to Clean Word (.docx)</h1>
-  <p class="desc">Text paste karein. Yeh heading se number hatayega, references me numbering banaye rakhega, aur author details ko clean center format me convert karega.</p>
+    <!-- वेबसाइट का नाम -->
+    <header>
+        <h1>📚 स्मार्ट स्टडी हब (Smart Study Hub)</h1>
+        <p>कक्षा 11वीं और 12वीं के सरल, सटीक और फ्री हिंदी नोट्स</p>
+    </header>
 
-  <textarea id="rawText" placeholder="Paste full paper text here..."></textarea>
+    <!-- मेनू -->
+    <nav>
+        <a href="#notes">सभी नोट्स</a>
+        <a href="#imp">महत्वपूर्ण प्रश्न</a>
+        <a href="#contact">संपर्क करें</a>
+    </nav>
 
-  <div class="actions">
-    <button onclick="convertAndDownload()">Convert & Download DOCX</button>
-  </div>
+    <div class="container" id="notes">
 
-  <div class="rules-list">
-    <strong>Auto Clean Rules:</strong>
-    <ul style="margin-left: 20px; margin-top: 6px;">
-      <li>Title aur Author Details center align rahenge bina labels aur brackets ke.</li>
-      <li>References heading ka number hataya jayega (e.g., <strong>References</strong>).</li>
-      <li>References ke har point par number barkarar rahega (e.g., <strong>1. Altieri...</strong>).</li>
-      <li>Online library tags (Wiley Online Library, Indian Journals aadi) auto-clean honge.</li>
-    </ul>
-  </div>
-</div>
+        <!-- पहला नोट -->
+        <div class="card">
+            <h2>अध्याय 1: लेखांकन (Accountancy) - एक परिचय</h2>
+            <p>लेखांकन क्या है, इसके मुख्य उद्देश्य, लाभ और सीमाएं क्या हैं? परीक्षा के लिए सबसे आसान भाषा में तैयार किए गए शॉर्ट नोट्स।</p>
+            <a href="#" class="btn">पूरे नोट्स पढ़ें →</a>
+        </div>
 
-<script>
-  function cleanLineArtifacts(str) {
-    return str
-      .replace(/\s*(Wiley Online Library|Indian Journals|Knowledge4Policy|K4P)\+?\d*/gi, '')
-      .trim();
-  }
+        <!-- दूसरा नोट -->
+        <div class="card">
+            <h2>अध्याय 1: व्यवसाय, व्यापार और वाणिज्य (Business Studies)</h2>
+            <p>आर्थिक और अनार्तिक क्रियाओं में अंतर, व्यवसाय की विशेषताएं और उद्योग के प्रकार — पूरा चैप्टर आसान बिंदुओं में।</p>
+            <a href="#" class="btn">पूरे नोट्स पढ़ें →</a>
+        </div>
 
-  function cleanAuthorLine(str) {
-    // Labels hatana (Author:, Designation:, Department:, Institution:, Country:)
-    let cleaned = str.replace(/^(Author|Designation|Department|Institution|Country)\s*:\s*/i, '');
-    // Brackets aur unke andar ka text hatana (e.g. (Fictional), (Illustrative))
-    cleaned = cleaned.replace(/\s*\([^)]*\)/g, '');
-    return cleaned.trim();
-  }
+        <!-- तीसरा नोट -->
+        <div class="card" id="imp">
+            <h2>अध्याय 1: व्यष्टि अर्थशास्त्र (Microeconomics) परिचय</h2>
+            <p>अर्थव्यवस्था की केंद्रीय समस्याएं, उत्पादन संभावना वक्र (PPC) और अवसर लागत के महत्वपूर्ण प्रश्न-उत्तर।</p>
+            <a href="#" class="btn">पूरे नोट्स पढ़ें →</a>
+        </div>
 
-  function convertAndDownload() {
-    const raw = document.getElementById('rawText').value.trim();
-    if (!raw) {
-      alert("Pehle text paste karein!");
-      return;
-    }
+        <!-- बिना Ad के कमाई का तरीका 1: Refer & Earn -->
+        <div class="partner-box">
+            <h3>🎓 फ्री ऑनलाइन लाइव क्लास और मॉक टेस्ट</h3>
+            <p>अपनी परीक्षा की तैयारी को और मजबूत करने के लिए हमारे पार्टनर ऐप पर आज ही फ्री रजिस्टर करें।</p>
+            <!-- नीचे # की जगह अपना Referral Link डालें -->
+            <a href="#" class="btn-green">फ्री में जुड़ें (Free Register)</a>
+        </div>
 
-    const lines = raw.split('\n');
-    const docParagraphs = [];
-    let isReferences = false;
-    let authorBlockFinished = false;
+    </div>
 
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i].trim();
-      if (!line) continue;
-
-      // 1. "Author Details" heading ko poori tarah chhod dena
-      if (/^Author Details\b/i.test(line)) {
-        continue;
-      }
-
-      // 2. References Heading Check (Heading se number hatana)
-      if (/^(\d+\.?\s*)?References\b/i.test(line)) {
-        isReferences = true;
-        authorBlockFinished = true;
-        docParagraphs.push(new docx.Paragraph({
-          children: [new docx.TextRun({ text: "References", bold: true, size: 26, font: "Times New Roman" })],
-          spacing: { before: 240, after: 120 }
-        }));
-        continue;
-      }
-
-      // 3. References List Section (Numbering barkarar rakhna)
-      if (isReferences) {
-        let cleanRef = cleanLineArtifacts(line);
-        docParagraphs.push(new docx.Paragraph({
-          children: [new docx.TextRun({ text: cleanRef, size: 22, font: "Times New Roman" })],
-          spacing: { after: 100 }
-        }));
-        continue;
-      }
-
-      // 4. Abstract se pehle ka hissa (Title + Clean Author Block)
-      if (!authorBlockFinished) {
-        if (/^Abstract\b/i.test(line)) {
-          authorBlockFinished = true;
-          docParagraphs.push(new docx.Paragraph({
-            children: [new docx.TextRun({ text: "Abstract", bold: true, size: 24, font: "Times New Roman" })],
-            spacing: { before: 200, after: 80 }
-          }));
-          continue;
-        }
-
-        // Title (Pehli line)
-        if (docParagraphs.length === 0) {
-          docParagraphs.push(new docx.Paragraph({
-            children: [new docx.TextRun({ text: line, bold: true, size: 30, font: "Times New Roman" })],
-            alignment: docx.AlignmentType.CENTER,
-            spacing: { after: 200 }
-          }));
-          continue;
-        }
-
-        // Author Details (Clean, center-aligned, bina label aur bina brackets ke)
-        let cleanedAuthor = cleanAuthorLine(line);
-        if (cleanedAuthor) {
-          docParagraphs.push(new docx.Paragraph({
-            children: [new docx.TextRun({ text: cleanedAuthor, size: 22, font: "Times New Roman" })],
-            alignment: docx.AlignmentType.CENTER,
-            spacing: { after: 60 }
-          }));
-        }
-        continue;
-      }
-
-      // 5. Main Headings (e.g., 1. Introduction, 2. Objectives)
-      if (/^\d+\.\s+[A-Z]/.test(line)) {
-        docParagraphs.push(new docx.Paragraph({
-          children: [new docx.TextRun({ text: line, bold: true, size: 26, font: "Times New Roman" })],
-          spacing: { before: 220, after: 100 }
-        }));
-        continue;
-      }
-
-      // 6. Sub Headings (e.g., 2.1, 3.1)
-      if (/^\d+\.\d+\s+/.test(line)) {
-        docParagraphs.push(new docx.Paragraph({
-          children: [new docx.TextRun({ text: line, bold: true, size: 24, font: "Times New Roman" })],
-          spacing: { before: 160, after: 80 }
-        }));
-        continue;
-      }
-
-      // 7. Keywords line
-      if (/^Keywords:/i.test(line)) {
-        docParagraphs.push(new docx.Paragraph({
-          children: [new docx.TextRun({ text: line, bold: true, size: 22, font: "Times New Roman" })],
-          spacing: { before: 100, after: 140 }
-        }));
-        continue;
-      }
-
-      // 8. Bullet points
-      if (/^[\-\•\*]\s+/.test(line)) {
-        let cleanBullet = line.replace(/^[\-\•\*]\s+/, '');
-        docParagraphs.push(new docx.Paragraph({
-          text: cleanLineArtifacts(cleanBullet),
-          bullet: { level: 0 },
-          spacing: { after: 60 }
-        }));
-        continue;
-      }
-
-      // 9. Normal Body Paragraphs
-      docParagraphs.push(new docx.Paragraph({
-        children: [new docx.TextRun({ text: cleanLineArtifacts(line), size: 22, font: "Times New Roman" })],
-        spacing: { after: 140 },
-        alignment: docx.AlignmentType.JUSTIFIED
-      }));
-    }
-
-    // Build genuine .docx File
-    const doc = new docx.Document({
-      sections: [{
-        properties: {
-          page: {
-            margin: {
-              top: 1440,
-              right: 1440,
-              bottom: 1440,
-              left: 1440
-            }
-          }
-        },
-        children: docParagraphs
-      }]
-    });
-
-    docx.Packer.toBlob(doc).then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Formatted_Paper.docx';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-  }
-</script>
+    <!-- बिना Ad के कमाई का तरीका 2: क्लाइंट्स से काम लेना -->
+    <footer id="contact">
+        <div class="service-offer">
+            <p>💻 <strong>क्या आपको भी अपने स्कूल, कोचिंग या बिज़नेस के लिए ऐसी ही शानदार वेबसाइट बनवानी है?</strong></p>
+            <p>संपर्क करें: <a href="mailto:aapkaemail@gmail.com">aapkaemail@gmail.com</a> या WhatsApp करें</p>
+        </div>
+        <p style="font-size: 13px; opacity: 0.8;">© 2026 स्मार्ट स्टडी हब | सभी अधिकार सुरक्षित</p>
+    </footer>
 
 </body>
 </html>
