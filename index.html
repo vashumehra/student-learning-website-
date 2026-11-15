@@ -27,7 +27,7 @@
     .card p { font-size: 0.92rem; color: #555; margin-bottom: 16px; }
     .action-btn { display: inline-block; text-align: center; background: #1e4d92; color: #fff; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; font-size: 0.95rem; }
     .quiz-btn { background: #f5b800; color: #111; }
-    .quiz-box { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .quiz-box, .ak-box { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .quiz-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #eee; padding-bottom: 14px; margin-bottom: 20px; }
     .back-btn { background: #eef2f7; color: #222; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
     .q-item { margin-bottom: 20px; padding: 16px; background: #f9fbff; border: 1px solid #e1e8f2; border-radius: 10px; }
@@ -38,7 +38,26 @@
     .opt-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
     .exp-box { display: none; margin-top: 10px; padding: 10px 12px; background: #fffbe6; border-left: 4px solid #f5b800; font-size: 0.9rem; border-radius: 4px; }
     .score-banner { background: #163b73; color: #fff; padding: 14px 18px; border-radius: 8px; font-weight: 700; margin-bottom: 18px; display: flex; justify-content: space-between; }
+
+    /* Photo Upload & Ad Gate */
+    .upload-zone { border: 2px dashed #1e4d92; background: #f4f8ff; border-radius: 12px; padding: 26px 16px; text-align: center; margin: 16px 0; cursor: pointer; }
+    .upload-zone:hover { background: #e8f1ff; }
+    .preview-img { max-width: 100%; max-height: 260px; border-radius: 8px; margin-top: 12px; border: 1px solid #ccc; }
+    .ad-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.84); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 15px; }
+    .ad-card { background: #fff; max-width: 460px; width: 100%; border-radius: 14px; padding: 22px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+    .ad-banner { background: linear-gradient(135deg, #ff9800, #f44336); color: #fff; padding: 26px 16px; border-radius: 10px; margin: 14px 0; }
+    .ad-timer { font-size: 1.05rem; font-weight: 700; color: #163b73; margin-top: 10px; }
+    .ans-result { white-space: pre-wrap; line-height: 1.65; background: #f9fbff; border: 1px solid #d5e1f2; padding: 20px; border-radius: 10px; font-size: 0.98rem; margin-top: 16px; }
+
     footer { background: #163b73; color: #fff; text-align: center; padding: 18px 12px; font-size: 0.92rem; margin-top: auto; }
+
+    /* Print / PDF Styles */
+    @media print {
+      header, .nav-bar, .filter-bar, footer, .no-print { display: none !important; }
+      body { background: #fff; }
+      .ak-box { box-shadow: none; padding: 0; }
+      .ans-result { border: none; background: #fff; font-size: 11pt; }
+    }
   </style>
 </head>
 <body>
@@ -78,6 +97,7 @@
     const liveAPI = "https://script.google.com/macros/s/AKfycbxYdDIDsIW4D4KM2_6Yv1CFKj7UdIf5TRcYCMxplDAeNLcXxEfrLRRPIQtY1k--mTWhDA/exec";
 
     let tab = "quiz", cls = "all", materials = [], quizzes = {}, activeQ = [], curTitle = "", score = 0, done = 0;
+    let uploadedBase64 = "", uploadedMime = "image/jpeg";
 
     function parseCSV(text) {
       const rows = []; let row = [], cell = "", q = false;
@@ -135,6 +155,7 @@
 
     function render() {
       const box = document.getElementById("content-area");
+
       if (tab === "quiz") {
         const names = Object.keys(quizzes).filter(matchCls);
         if (!names.length) { box.innerHTML = `<div class="status-msg">इस कक्षा के लिए अभी कोई AI टेस्ट नहीं है। ऊपर <b>"सभी कक्षाएं"</b> चुनें।</div>`; return; }
@@ -145,11 +166,40 @@
           </div>`).join("") + `</div>`;
         return;
       }
+
+      // फोटो से AI उत्तर कुंजी + विज्ञापन + PDF डाउनलोड
+      if (tab === "answers") {
+        uploadedBase64 = "";
+        box.innerHTML = `
+          <div class="ak-box">
+            <div class="no-print">
+              <h2 style="color:#163b73; margin-bottom:8px;">📸 फोटो डालें और पूरे पेपर की उत्तर कुंजी (PDF) पाएं</h2>
+              <p style="color:#555;">अपनी किसी भी कक्षा या परीक्षा के प्रश्न पत्र की साफ फोटो चुनें — छोटा सा विज्ञापन देखने के बाद AI सभी प्रश्नों के सटीक उत्तर तैयार कर देगा जिन्हें आप PDF में सेव कर सकते हैं।</p>
+              
+              <div class="upload-zone" onclick="document.getElementById('paper-photo').click()">
+                <div style="font-size:2.2rem; margin-bottom:6px;">📷</div>
+                <strong style="color:#163b73; font-size:1.05rem;">यहाँ क्लिक करके प्रश्न पत्र की फोटो चुनें</strong>
+                <p style="font-size:0.85rem; color:#666; margin-top:4px;">(JPG, PNG या मोबाइल कैमरा फोटो)</p>
+                <input type="file" id="paper-photo" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+                <img id="photo-preview" class="preview-img" style="display:none;">
+              </div>
+
+              <div id="solve-btn-wrap" style="text-align:center; display:none; margin-top:14px;">
+                <button class="action-btn quiz-btn" style="font-size:1.05rem; padding:13px 24px;" onclick="startAdAndSolve()">
+                  📺 विज्ञापन देखें और उत्तर कुंजी बनाएं (15 सेकंड)
+                </button>
+              </div>
+            </div>
+
+            <div id="ai-answer-output"></div>
+          </div>`;
+        return;
+      }
+
       const list = materials.filter(m => {
         const full = (m.c + " " + m.t + " " + m.d).toLowerCase();
         if (!matchCls(full)) return false;
         if (tab === "papers") return /paper|प्रश्न|मॉडल|exam/.test(full);
-        if (tab === "answers") return /answer|उत्तर|solution|हल/.test(full);
         if (tab === "classes") return /youtube|youtu\.be|class|वीडियो|क्लास/.test(full + " " + m.l.toLowerCase());
         return true;
       });
@@ -161,6 +211,120 @@
         </div>`).join("") + `</div>`;
     }
 
+    // फोटो को हल्का और तेज़ बनाकर पढ़ना ताकि तुरंत अपलोड हो
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          const maxW = 1200;
+          const scale = img.width > maxW ? maxW / img.width : 1;
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          uploadedBase64 = dataUrl.split(",")[1];
+          uploadedMime = "image/jpeg";
+
+          const prev = document.getElementById("photo-preview");
+          prev.src = dataUrl;
+          prev.style.display = "inline-block";
+          document.getElementById("solve-btn-wrap").style.display = "block";
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // विज्ञापन दिखाने के साथ-साथ बैकग्राउंड में AI से उत्तर तैयार करवाना
+    function startAdAndSolve() {
+      if (!uploadedBase64) return;
+      let sec = 15;
+      let aiDone = false, adDone = false, solvedText = "", errMsg = "";
+
+      const modal = document.createElement("div");
+      modal.className = "ad-modal";
+      modal.innerHTML = `
+        <div class="ad-card">
+          <span style="font-size:0.78rem; background:#eee; padding:3px 8px; border-radius:4px;">Sponsored Advertisement</span>
+          <div class="ad-banner">
+            <h3 style="margin-bottom:8px;">🎓 All Study Hub (ज्ञान सागर)</h3>
+            <p style="font-size:0.95rem;">कक्षा 5वीं से 12वीं व कॉलेज के सभी विषयों के लाइव AI टेस्ट, नोट्स और प्रश्न पत्र बिल्कुल मुफ्त!</p>
+          </div>
+          <div class="ad-timer" id="ad-countdown">⏳ विज्ञापन समाप्त होने में ${sec} सेकंड शेष...</div>
+          <button id="ad-close-btn" class="action-btn" style="margin-top:14px; display:none; width:100%; background:#28a745;">
+            ✅ उत्तर कुंजी देखें और PDF डाउनलोड करें
+          </button>
+        </div>`;
+      document.body.appendChild(modal);
+
+      function checkReady() {
+        const cd = document.getElementById("ad-countdown");
+        const btn = document.getElementById("ad-close-btn");
+        if (!adDone) return;
+        if (!aiDone) {
+          if (cd) cd.innerText = "🤖 AI आपके प्रश्न पत्र के उत्तर लिख रहा है (2-3 सेकंड)...";
+          return;
+        }
+        if (cd) cd.innerText = "🎉 आपकी उत्तर कुंजी तैयार है!";
+        if (btn) {
+          btn.style.display = "inline-block";
+          btn.onclick = function() {
+            modal.remove();
+            const out = document.getElementById("ai-answer-output");
+            if (errMsg) {
+              out.innerHTML = `<div class="status-msg" style="color:#b71c1c;">⚠️ ${errMsg}</div>`;
+            } else {
+              out.innerHTML = `
+                <div style="margin-top:22px; border-top:2px solid #eee; padding-top:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <h3 style="color:#155724;">✅ All Study Hub — आधिकारिक AI उत्तर कुंजी</h3>
+                    <button class="action-btn no-print" style="background:#28a745;" onclick="window.print()">📥 PDF डाउनलोड / प्रिंट करें</button>
+                  </div>
+                  <div class="ans-result">${solvedText}</div>
+                </div>`;
+              out.scrollIntoView({ behavior: "smooth" });
+            }
+          };
+        }
+      }
+
+      // 15 सेकंड का टाइमर
+      const timer = setInterval(() => {
+        sec--;
+        const cd = document.getElementById("ad-countdown");
+        if (sec > 0) {
+          if (cd) cd.innerText = `⏳ विज्ञापन समाप्त होने में ${sec} सेकंड शेष...`;
+        } else {
+          clearInterval(timer);
+          adDone = true;
+          checkReady();
+        }
+      }, 1000);
+
+      // बैकग्राउंड में AI को फोटो भेजना
+      fetch(liveAPI, {
+        method: "POST",
+        body: JSON.stringify({ image: uploadedBase64, mimeType: uploadedMime })
+      })
+      .then(r => r.json())
+      .then(data => {
+        aiDone = true;
+        if (data.status === "success") solvedText = data.answers;
+        else errMsg = data.message || "उत्तर तैयार करने में समस्या आई।";
+        checkReady();
+      })
+      .catch(e => {
+        aiDone = true;
+        errMsg = "नेटवर्क व्यस्त है, कृपया पुनः प्रयास करें।";
+        checkReady();
+      });
+    }
+
+    // AI क्विज़ प्लेयर
     function startQuiz(name) {
       curTitle = name; activeQ = quizzes[name] || []; score = 0; done = 0;
       const labels = ["A", "B", "C", "D"];
