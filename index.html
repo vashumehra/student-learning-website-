@@ -235,10 +235,10 @@
 
   <div class="nav-bar">
     <button class="nav-btn" data-tab="notes" onclick="switchTab('notes', this)">📖 नोट्स (Notes)</button>
-    <button class="nav-btn" data-tab="classes" onclick="switchTab('classes', this)"> 👨‍🏫ऑनलाइन क्लास</button>
+    <button class="nav-btn" data-tab="classes" onclick="switchTab('classes', this)">🎥 ऑनलाइन क्लास</button>
     <button class="nav-btn" data-tab="papers" onclick="switchTab('papers', this)">📝 प्रश्न पत्र</button>
     <button class="nav-btn" data-tab="answers" onclick="switchTab('answers', this)">✅ उत्तर कुंजी</button>
-    <button class="nav-btn active" data-tab="quiz" onclick="switchTab('quiz', this)"> 👩‍🎓AI ऑनलाइन टेस्ट</button>
+    <button class="nav-btn active" data-tab="quiz" onclick="switchTab('quiz', this)">🤖 AI ऑनलाइन टेस्ट</button>
   </div>
 
   <div class="filter-bar">
@@ -429,7 +429,7 @@
       container.innerHTML = html;
     }
 
-    // इंटरैक्टिव क्विज़ प्लेयर + लाइव नए प्रश्न जेनरेटर (GET method)
+    // इंटरैक्टिव क्विज़ प्लेयर + ऑटो-रीट्राई लाइव नए प्रश्न जेनरेटर
     let activeQuizQuestions = [];
     let currentTestTitle = "";
     let userScore = 0;
@@ -518,28 +518,37 @@
       btn.disabled = true;
       btn.innerText = "⏳ AI 10 नए प्रश्न तैयार कर रहा है (5-8 सेकंड)...";
 
-      try {
-        const res = await fetch(liveAIQuizAPI + "?topic=" + encodeURIComponent(currentTestTitle));
-        const data = await res.json();
+      const url = liveAIQuizAPI + "?topic=" + encodeURIComponent(currentTestTitle) + "&t=" + Date.now();
 
-        if (data.status === "success" && data.questions) {
-          const newTitle = currentTestTitle.replace(" (New Set)", "") + " (New Set)";
-          allQuizzes[newTitle] = data.questions.map(q => ({
-            q: q.question,
-            opts: [q.optA, q.optB, q.optC, q.optD],
-            ansInfo: q.answerInfo
-          }));
-          startQuiz(newTitle);
-        } else {
-          alert("त्रुटि: " + (data.message || "कृपया पुनः प्रयास करें।"));
-          btn.disabled = false;
-          btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const res = await fetch(url, { redirect: "follow" });
+          const data = await res.json();
+
+          if (data.status === "success" && data.questions) {
+            const newTitle = data.testName || (currentTestTitle + " (New Set)");
+            allQuizzes[newTitle] = data.questions.map(q => ({
+              q: q.question,
+              opts: [q.optA, q.optB, q.optC, q.optD],
+              ansInfo: q.answerInfo
+            }));
+            startQuiz(newTitle);
+            return;
+          } else if (attempt === 2) {
+            alert("AI सर्वर अभी व्यस्त है, कृपया 10 सेकंड बाद पुनः प्रयास करें।");
+          }
+        } catch (e) {
+          if (attempt === 1) {
+            btn.innerText = "⏳ सर्वर से पुनः जुड़ रहा है (2 सेकंड)...";
+            await new Promise(r => setTimeout(r, 2000));
+          } else {
+            alert("कृपया 10 सेकंड रुककर दोबारा बटन दबाएं।");
+          }
         }
-      } catch (e) {
-        alert("नेटवर्क त्रुटि: " + e.message);
-        btn.disabled = false;
-        btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
       }
+
+      btn.disabled = false;
+      btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
     }
 
     loadAllData();
