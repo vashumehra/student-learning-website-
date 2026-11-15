@@ -64,7 +64,7 @@
     <button class="nav-btn" onclick="switchTab('classes', this)">🎥 ऑनलाइन क्लास</button>
     <button class="nav-btn" onclick="switchTab('papers', this)">📝 प्रश्न पत्र</button>
     <button class="nav-btn" onclick="switchTab('answers', this)">✅ उत्तर कुंजी</button>
-    <button class="nav-btn active" onclick="switchTab('quiz', this)">🤖 AI ऑनलाइन टेस्ट</button>
+    <button class="nav-btn active" onclick="switchTab('quiz', this)">℉ AI ऑनलाइन टेस्ट</button>
   </div>
 
   <div class="filter-bar">
@@ -209,12 +209,12 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxW = 900;
+          const maxW = 700;
           const scale = img.width > maxW ? maxW / img.width : 1;
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
           canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
           uploadedBase64 = dataUrl.split(",")[1];
           uploadedMime = "image/jpeg";
 
@@ -228,7 +228,6 @@
       reader.readAsDataURL(file);
     }
 
-    // 100% CORS-Free: no-cors POST से फोटो भेजना + JSONP से उत्तर निकालना
     function startAdAndSolve() {
       if (!uploadedBase64) return;
       let sec = 15;
@@ -247,14 +246,12 @@
         </div>`;
       document.body.appendChild(modal);
 
-      // 1. फोटो भेजें (no-cors मोड में Chrome कभी ब्लॉक नहीं करता)
       fetch(liveAPI, {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify({ reqId: reqId, image: uploadedBase64, mimeType: uploadedMime })
       });
 
-      // 2. 15 सेकंड का टाइमर पूरा होते ही JSONP से उत्तर लें
       const timer = setInterval(() => {
         sec--;
         const cd = document.getElementById("ad-countdown");
@@ -296,8 +293,8 @@
         } else if (data && data.status === "error") {
           modal.remove();
           document.getElementById("ai-answer-output").innerHTML = `<div class="status-msg" style="color:#b71c1c;">⚠️ त्रुटि: ${data.answers}</div>`;
-        } else if (attempt <= 10) {
-          setTimeout(() => pollAnswerJSONP(reqId, modal, attempt + 1), 2000);
+        } else if (attempt <= 25) {
+          setTimeout(() => pollAnswerJSONP(reqId, modal, attempt + 1), 1000);
         } else {
           modal.remove();
           document.getElementById("ai-answer-output").innerHTML = `<div class="status-msg" style="color:#b71c1c;">⚠️ समय अधिक लग रहा है, कृपया साफ फोटो के साथ पुनः प्रयास करें।</div>`;
