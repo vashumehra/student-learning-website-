@@ -256,12 +256,12 @@
   </main>
 
   <footer>
-    <p>💻 <strong>अपने स्कूल या कोचिंग के लिए वेबसाइट बनवाने हेतु संपर्क करें: vashumehra@gmail.com</strong></p>
+    <p>💻 <strong>अपने स्कूल या कोचिंग के लिए वेबसाइट बनवाने हेतु संपर्क करें: edwininvashu876@gmail.com</strong></p>
     <p>© 2026 All Study Hub</p>
   </footer>
 
   <script>
-    // 1. आपकी Google Sheets और Live AI Web App के लिंक
+    // आपकी Google Sheets और Live AI Web App के लिंक
     const formResponsesCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=0&single=true&output=csv";
     const quizSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=1004850232&single=true&output=csv";
     const liveAIQuizAPI = "https://script.google.com/macros/s/AKfycbxYdDIDsIW4D4KM2_6Yv1CFKj7UdIf5TRcYCMxplDAeNLcXxEfrLRRPIQtY1k--mTWhDA/exec";
@@ -429,7 +429,7 @@
       container.innerHTML = html;
     }
 
-    // इंटरैक्टिव क्विज़ प्लेयर + लाइव नए प्रश्न जेनरेटर
+    // इंटरैक्टिव क्विज़ प्लेयर + लाइव नए प्रश्न जेनरेटर (GET method)
     let activeQuizQuestions = [];
     let currentTestTitle = "";
     let userScore = 0;
@@ -490,7 +490,6 @@
       document.getElementById("live-score").innerText = `आपका स्कोर: ${userScore} / ${activeQuizQuestions.length}`;
       document.getElementById(`exp-${qIdx}`).style.display = "block";
 
-      // जब छात्र सभी प्रश्नों के उत्तर दे दे (या पूरे 10/10 सही कर दे)
       if (answeredCount === activeQuizQuestions.length) {
         const isPerfect = userScore === activeQuizQuestions.length;
         const msg = isPerfect
@@ -520,10 +519,7 @@
       btn.innerText = "⏳ AI 10 नए प्रश्न तैयार कर रहा है (5-8 सेकंड)...";
 
       try {
-        const res = await fetch(liveAIQuizAPI, {
-          method: "POST",
-          body: JSON.stringify({ topic: currentTestTitle })
-        });
+        const res = await fetch(liveAIQuizAPI + "?topic=" + encodeURIComponent(currentTestTitle));
         const data = await res.json();
 
         if (data.status === "success" && data.questions) {
@@ -535,7 +531,7 @@
           }));
           startQuiz(newTitle);
         } else {
-          alert("नए प्रश्न बनाने में त्रुटि आई, कृपया पुनः प्रयास करें।");
+          alert("त्रुटि: " + (data.message || "कृपया पुनः प्रयास करें।"));
           btn.disabled = false;
           btn.innerText = "⚡ 10 नए प्रश्न बनाएं (New Questions)";
         }
