@@ -1,370 +1,501 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Study Hub - नोट्स, क्लास, पेपर और AI टेस्ट</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f4f7f6; color: #333; }
-        header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 25px 15px; text-align: center; }
-        
-        /* मुख्य 5 सेक्शन टैब */
-        .main-tabs { display: flex; justify-content: center; background: #162b52; padding: 10px; gap: 8px; flex-wrap: wrap; }
-        .tab-btn { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 9px 15px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { background: #ffd700; color: #000; border-color: #ffd700; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Study Hub (ज्ञान सागर) - नोट्स, ऑनलाइन क्लास और AI टेस्ट</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #f4f7fb; color: #222; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* कक्षा फिल्टर */
-        .filter-bar { background: #e9ecef; padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
-        .filter-bar button { background: white; color: #333; border: 1px solid #ccc; padding: 6px 12px; margin: 3px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .filter-bar button.active { background: #2a5298; color: white; border-color: #2a5298; }
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #163b73, #1e4d92);
+      color: #fff;
+      text-align: center;
+      padding: 28px 15px 22px;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 6px; letter-spacing: 0.5px; }
+    header p { font-size: 1rem; color: #dbe7ff; }
 
-        .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.06); border-top: 5px solid #2a5298; display: flex; flex-direction: column; justify-content: space-between; }
-        .badge { display: inline-block; background: #e8f4fd; color: #1e3c72; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
-        .card h2 { color: #1e3c72; font-size: 19px; margin-bottom: 8px; }
-        .card p { color: #555; font-size: 14px; margin-bottom: 15px; }
-        
-        .btn { display: block; background: #2a5298; color: white; padding: 10px; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; border: none; width: 100%; cursor: pointer; font-size: 14px; }
-        .btn-green { background: #28a745; }
-        .btn-orange { background: #d97706; }
-        .btn-purple { background: #6f42c1; }
+    /* Main Navigation Tabs */
+    .nav-bar {
+      background: #102a52;
+      padding: 14px 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    .nav-btn {
+      background: #1d4279;
+      color: #fff;
+      border: 1px solid #3562a6;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .nav-btn:hover { background: #29569b; }
+    .nav-btn.active {
+      background: #ffd000;
+      color: #111;
+      border-color: #ffd000;
+      box-shadow: 0 2px 10px rgba(255, 208, 0, 0.4);
+    }
 
-        /* पॉपअप (Modal) स्टाइल */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; overflow-y: auto; }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; max-width: 550px; width: 100%; text-align: left; position: relative; }
-        .ad-space { background: #fff8e1; border: 2px dashed #f59e0b; padding: 20px; margin: 15px 0; border-radius: 8px; text-align: center; }
+    /* Class Filter Buttons */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 18px 12px 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .filter-btn {
+      background: #fff;
+      color: #333;
+      border: 1px solid #cfd8e3;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .filter-btn:hover { border-color: #1e4d92; color: #1e4d92; }
+    .filter-btn.active {
+      background: #1e4d92;
+      color: #fff;
+      border-color: #1e4d92;
+    }
 
-        /* AI Quiz ऑप्शन बटन */
-        .quiz-opt { display: block; width: 100%; text-align: left; padding: 12px 15px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; font-size: 15px; cursor: pointer; font-weight: 500; }
-        .quiz-opt:hover:not(:disabled) { border-color: #2a5298; background: #eef4ff; }
-        .quiz-opt.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold; }
-        .quiz-opt.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; font-weight: bold; }
-        .ai-feedback { margin-top: 12px; padding: 12px; border-radius: 6px; font-size: 14px; display: none; }
+    /* Main Content Container */
+    main {
+      flex: 1;
+      max-width: 1050px;
+      width: 100%;
+      margin: 15px auto 30px;
+      padding: 0 15px;
+    }
+    .status-msg {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 1.1rem;
+      color: #444;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
 
-        footer { background: #1e3c72; color: white; text-align: center; padding: 25px 15px; margin-top: 40px; }
-    </style>
+    /* Cards Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      border-top: 4px solid #1e4d92;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card.quiz-card { border-top-color: #f5b800; }
+    .badge {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #163b73;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+    .quiz-card .badge { background: #fff5cc; color: #8a6400; }
+    .card h3 { font-size: 1.15rem; margin-bottom: 8px; color: #1a1a1a; }
+    .card p { font-size: 0.92rem; color: #555; margin-bottom: 16px; line-height: 1.45; }
+    .action-btn {
+      display: inline-block;
+      text-align: center;
+      background: #1e4d92;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    .action-btn:hover { background: #143669; }
+    .quiz-btn { background: #f5b800; color: #111; }
+    .quiz-btn:hover { background: #e0a800; }
+
+    /* Interactive Quiz Player Box */
+    .quiz-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      background: #eef2f7;
+      color: #222;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .q-item {
+      margin-bottom: 22px;
+      padding: 16px;
+      background: #f9fbff;
+      border: 1px solid #e1e8f2;
+      border-radius: 10px;
+    }
+    .q-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: #163b73; }
+    .opt-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .opt-btn:hover:not(:disabled) { background: #eef4ff; border-color: #1e4d92; }
+    .opt-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: 700; }
+    .opt-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .exp-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #fffbe6;
+      border-left: 4px solid #f5b800;
+      font-size: 0.9rem;
+      color: #333;
+      border-radius: 4px;
+    }
+    .score-banner {
+      background: #163b73;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Footer */
+    footer {
+      background: #163b73;
+      color: #fff;
+      text-align: center;
+      padding: 18px 12px;
+      font-size: 0.92rem;
+      margin-top: auto;
+    }
+    footer p { margin: 4px 0; }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>📚 All Study Hub (ज्ञान सागर)</h1>
-        <p>नोट्स, ऑनलाइन क्लास, प्रश्न पत्र, उत्तर कुंजी और AI ऑनलाइन टेस्ट</p>
-    </header>
+  <header>
+    <h1>📚 All Study Hub (ज्ञान सागर)</h1>
+    <p>नोट्स, ऑनलाइन क्लास, प्रश्न पत्र, उत्तर कुंजी और AI ऑनलाइन टेस्ट</p>
+  </header>
 
-    <!-- 1. मुख्य 5 सेक्शन -->
-    <div class="main-tabs">
-        <button class="tab-btn active" onclick="selectSection('Notes', this)">📖 नोट्स (Notes)</button>
-        <button class="tab-btn" onclick="selectSection('Online Class', this)">🎥 ऑनलाइन क्लास</button>
-        <button class="tab-btn" onclick="selectSection('Question Paper', this)">📝 प्रश्न पत्र</button>
-        <button class="tab-btn" onclick="selectSection('Answer Key', this)">✅ उत्तर कुंजी</button>
-        <button class="tab-btn" onclick="selectSection('AI Online Test', this)">🤖 AI ऑनलाइन टेस्ट</button>
-    </div>
+  <div class="nav-bar">
+    <button class="nav-btn" data-tab="notes" onclick="switchTab('notes', this)">📖 नोट्स (Notes)</button>
+    <button class="nav-btn" data-tab="classes" onclick="switchTab('classes', this)">🎥 ऑनलाइन क्लास</button>
+    <button class="nav-btn" data-tab="papers" onclick="switchTab('papers', this)">📝 प्रश्न पत्र</button>
+    <button class="nav-btn" data-tab="answers" onclick="switchTab('answers', this)">✅ उत्तर कुंजी</button>
+    <button class="nav-btn active" data-tab="quiz" onclick="switchTab('quiz', this)">🤖 AI ऑनलाइन टेस्ट</button>
+  </div>
 
-    <!-- 2. कक्षा फिल्टर -->
-    <div class="filter-bar">
-        <button class="active" onclick="selectClass('All', this)">सभी कक्षाएं</button>
-        <button onclick="selectClass('Class 5-8', this)">कक्षा 5-8</button>
-        <button onclick="selectClass('Class 9-10', this)">कक्षा 9-10</button>
-        <button onclick="selectClass('Class 11-12', this)">कक्षा 11-12</button>
-        <button onclick="selectClass('College UG', this)">कॉलेज (UG)</button>
-        <button onclick="selectClass('College PG', this)">कॉलेज (PG)</button>
-        <button onclick="selectClass('PhD & Research', this)">PhD व रिसर्च</button>
-    </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="switchClass('all', this)">सभी कक्षाएं</button>
+    <button class="filter-btn" onclick="switchClass('5-8', this)">कक्षा 5-8</button>
+    <button class="filter-btn" onclick="switchClass('9-10', this)">कक्षा 9-10</button>
+    <button class="filter-btn" onclick="switchClass('11-12', this)">कक्षा 11-12</button>
+    <button class="filter-btn" onclick="switchClass('UG', this)">कॉलेज (UG)</button>
+    <button class="filter-btn" onclick="switchClass('PG', this)">कॉलेज (PG)</button>
+    <button class="filter-btn" onclick="switchClass('PhD', this)">PhD व रिसर्च</button>
+  </div>
 
-    <div class="container">
-        <div id="loading" style="text-align:center; padding: 30px; font-size: 18px;">सामग्री लोड हो रही है...</div>
-        <div class="grid" id="content-container"></div>
-    </div>
+  <main id="content-area">
+    <div class="status-msg">⏳ सामग्री लोड हो रही है, कृपया प्रतीक्षा करें...</div>
+  </main>
 
-    <!-- Answer Key Ad पॉपअप -->
-    <div class="modal" id="adModal">
-        <div class="modal-content" style="text-align:center;">
-            <h3 style="color:#1e3c72;">⏳ उत्तर कुंजी (Answer Key) तैयार हो रही है...</h3>
-            <div class="ad-space">
-                <p style="font-size:12px; color:#888; margin-bottom:5px;">SPONSORED / विज्ञापन</p>
-                <p><strong>🎯 घर बैठे ऑनलाइन पढ़ाई और मॉक टेस्ट के लिए हमारे पार्टनर ऐप से जुड़ें!</strong></p>
-                <a href="#" target="_blank" style="display:inline-block; margin-top:10px; background:#28a745; color:white; padding:8px 15px; text-decoration:none; border-radius:5px; font-weight:bold;">अभी देखें →</a>
+  <footer>
+    <p>💻 <strong>अपने स्कूल या कोचिंग के लिए वेबसाइट बनवाने हेतु संपर्क करें: vashumehra@gmail.com</strong></p>
+    <p>© 2026 All Study Hub</p>
+  </footer>
+
+  <script>
+    // 1. आपकी Google Sheets के लाइव CSV लिंक
+    const formResponsesCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=0&single=true&output=csv";
+    const quizSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=1004850232&single=true&output=csv";
+
+    let currentTab = "quiz";
+    let currentClass = "all";
+    let allMaterials = [];
+    let allQuizzes = {}; // { "Test Name": [ {q, opts, ans, exp}, ... ] }
+
+    // सुरक्षित CSV पार्सर (कॉमा और कोट्स वाले हिंदी वाक्यों को सही से पढ़ता है)
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], cell = "", inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i], next = text[i + 1];
+        if (ch === '"' && inQuotes && next === '"') { cell += '"'; i++; }
+        else if (ch === '"') { inQuotes = !inQuotes; }
+        else if (ch === ',' && !inQuotes) { row.push(cell.trim()); cell = ""; }
+        else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(cell.trim());
+          if (row.some(c => c !== "")) rows.push(row);
+          row = []; cell = "";
+        } else { cell += ch; }
+      }
+      if (cell.length > 0 || row.length > 0) {
+        row.push(cell.trim());
+        if (row.some(c => c !== "")) rows.push(row);
+      }
+      return rows;
+    }
+
+    // दोनों शीट से डेटा लोड करना
+    async function loadAllData() {
+      try {
+        // AI Tests लोड करें
+        const qRes = await fetch(quizSheetCSV + "&t=" + Date.now());
+        const qText = await qRes.text();
+        const qRows = parseCSV(qText);
+
+        allQuizzes = {};
+        for (let i = 1; i < qRows.length; i++) {
+          const r = qRows[i];
+          if (r.length < 7) continue;
+          const testName = r[1] || "AI Practice Test";
+          const question = r[2];
+          if (!question || question.toLowerCase() === "question") continue;
+
+          if (!allQuizzes[testName]) allQuizzes[testName] = [];
+          allQuizzes[testName].push({
+            q: question,
+            opts: [r[3] || "", r[4] || "", r[5] || "", r[6] || ""],
+            ansInfo: r[7] || ""
+          });
+        }
+
+        // Form Responses (नोट्स/पेपर/क्लास) लोड करें
+        try {
+          const mRes = await fetch(formResponsesCSV + "&t=" + Date.now());
+          const mText = await mRes.text();
+          const mRows = parseCSV(mText);
+          allMaterials = [];
+          for (let i = 1; i < mRows.length; i++) {
+            const r = mRows[i];
+            if (r.length < 3) continue;
+            allMaterials.push({
+              cls: r[1] || "",
+              title: r[2] || "",
+              desc: r[3] || "",
+              link: r[4] || ""
+            });
+          }
+        } catch (err) { console.log("Notes sheet skipped:", err); }
+
+        renderView();
+      } catch (error) {
+        document.getElementById("content-area").innerHTML =
+          `<div class="status-msg">⚠️ डेटा लोड करने में समस्या आई। कृपया इंटरनेट जांचें या पेज रिफ्रेश करें।</div>`;
+      }
+    }
+
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderView();
+    }
+
+    function switchClass(cls, btn) {
+      currentClass = cls;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderView();
+    }
+
+    // स्मार्ट कक्षा मिलान (ताकि "Class 12th Hindi Test 1" अपने आप "कक्षा 11-12" में भी दिखे)
+    function matchesClass(text, filter) {
+      if (filter === "all") return true;
+      const t = text.toLowerCase();
+      if (filter === "5-8") return /5|6|7|8/.test(t);
+      if (filter === "9-10") return /9|10/.test(t);
+      if (filter === "11-12") return /11|12/.test(t);
+      if (filter === "UG") return /ug|ba|bsc|bcom|college/.test(t);
+      if (filter === "PG") return /pg|ma|msc|mcom/.test(t);
+      if (filter === "PhD") return /phd|research/.test(t);
+      return true;
+    }
+
+    function renderView() {
+      const container = document.getElementById("content-area");
+
+      // 1. AI ऑनलाइन टेस्ट सेक्शन
+      if (currentTab === "quiz") {
+        const testNames = Object.keys(allQuizzes).filter(name => matchesClass(name, currentClass));
+        if (testNames.length === 0) {
+          container.innerHTML = `<div class="status-msg">इस कक्षा के लिए अभी कोई AI टेस्ट उपलब्ध नहीं है। ऊपर <b>"सभी कक्षाएं"</b> चुनकर देखें।</div>`;
+          return;
+        }
+
+        let html = `<div class="grid">`;
+        testNames.forEach(name => {
+          const count = allQuizzes[name].length;
+          const safeName = name.replace(/'/g, "\\'");
+          html += `
+            <div class="card quiz-card">
+              <div>
+                <span class="badge">🤖 AI लाइव टेस्ट • ${count} प्रश्न</span>
+                <h3>${name}</h3>
+                <p>सभी प्रश्नों के उत्तर दें और तुरंत सही उत्तर, व्याख्या व अपना स्कोर देखें।</p>
+              </div>
+              <button class="action-btn quiz-btn" onclick="startQuiz('${safeName}')">▶ टेस्ट शुरू करें</button>
+            </div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+        return;
+      }
+
+      // 2. नोट्स / क्लास / प्रश्न पत्र / उत्तर कुंजी
+      const filtered = allMaterials.filter(item => {
+        const fullText = (item.cls + " " + item.title + " " + item.desc).toLowerCase();
+        if (!matchesClass(fullText, currentClass)) return false;
+
+        if (currentTab === "papers") return /paper|प्रश्न|मॉडल|exam/.test(fullText);
+        if (currentTab === "answers") return /answer|उत्तर|solution|हल/.test(fullText);
+        if (currentTab === "classes") return /youtube|youtu\.be|class|वीडियो|क्लास/.test(fullText + " " + item.link.toLowerCase());
+        return true; // notes में सभी उपयोगी सामग्री दिखाएं
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="status-msg">इस सेक्शन में सामग्री जल्द ही जोड़ी जाएगी।</div>`;
+        return;
+      }
+
+      let html = `<div class="grid">`;
+      filtered.forEach(item => {
+        const hasValidLink = item.link && item.link.startsWith("http");
+        html += `
+          <div class="card">
+            <div>
+              <span class="badge">${item.cls || "Study Material"}</span>
+              <h3>${item.title}</h3>
+              <p>${item.desc || "अध्ययन सामग्री और महत्वपूर्ण नोट्स"}</p>
             </div>
-            <p id="timerText" style="font-weight:bold; color:#d97706;">कृपया 10 सेकंड प्रतीक्षा करें...</p>
-            <button id="unlockBtn" class="btn btn-green" style="display:none; margin-top:10px;" onclick="openFinalAnswer()">✅ उत्तर कुंजी खोलें</button>
-            <button onclick="closeAdModal()" style="margin-top:10px; background:none; border:none; color:#666; cursor:pointer; text-decoration:underline;">बंद करें</button>
-        </div>
-    </div>
+            ${hasValidLink
+              ? `<a class="action-btn" href="${item.link}" target="_blank">📄 खोलें / डाउनलोड करें</a>`
+              : `<button class="action-btn" style="background:#6c757d;" disabled>लिंक जल्द उपलब्ध होगा</button>`}
+          </div>`;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
 
-    <!-- AI Online Test पॉपअप -->
-    <div class="modal" id="quizModal">
-        <div class="modal-content" id="quizBox">
-            <!-- यहाँ AI प्रश्न और उत्तर आएंगे -->
-        </div>
-    </div>
+    // इंटरैक्टिव क्विज़ प्लेयर
+    let activeQuizQuestions = [];
+    let userScore = 0;
+    let answeredCount = 0;
 
-    <footer>
-        <p>💻 <strong>अपने स्कूल या कोचिंग के लिए वेबसाइट बनवाने हेतु संपर्क करें: aapkaemail@gmail.com</strong></p>
-        <p style="font-size: 13px; margin-top: 8px; opacity: 0.8;">© 2026 All Study Hub</p>
-    </footer>
+    function startQuiz(testName) {
+      activeQuizQuestions = allQuizzes[testName] || [];
+      userScore = 0;
+      answeredCount = 0;
 
-    <script>
-        // 1. मुख्य कंटेंट शीट का CSV लिंक
-        const mainSheetCSV = "YAHAN_MUKHYA_SHEET_KA_CSV_LINK_DALEIN";
-        // 2. टेस्ट के प्रश्नों वाली शीट का CSV लिंक
-        const quizSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWC4ZVnPZJDmxLxKPXmzyw5IusiLI3BIxfJuf6eWIp4KsC6XRksX8MS2E44rtXWVU2GJmiBikEj8L/pub?gid=1004850232&single=true&output=csv";
+      const container = document.getElementById("content-area");
+      let html = `
+        <div class="quiz-box">
+          <div class="quiz-header">
+            <h2>🤖 ${testName}</h2>
+            <button class="back-btn" onclick="renderView()">⬅ सभी टेस्ट पर वापस जाएं</button>
+          </div>
+          <div class="score-banner">
+            <span>कुल प्रश्न: ${activeQuizQuestions.length}</span>
+            <span id="live-score">आपका स्कोर: 0 / ${activeQuizQuestions.length}</span>
+          </div>`;
 
-        let allData = [];
-        let allQuizQuestions = [];
-        let currentSection = "Notes";
-        let currentClass = "All";
-        let pendingAnswerLink = "";
-        let countdownInterval;
+      activeQuizQuestions.forEach((item, qIdx) => {
+        const labels = ["A", "B", "C", "D"];
+        html += `
+          <div class="q-item" id="q-card-${qIdx}">
+            <div class="q-title">प्रश्न ${qIdx + 1}: ${item.q}</div>`;
+        item.opts.forEach((opt, oIdx) => {
+          html += `<button class="opt-btn" id="opt-${qIdx}-${oIdx}" onclick="checkAnswer(${qIdx}, ${oIdx})"><strong>(${labels[oIdx]})</strong> ${opt}</button>`;
+        });
+        html += `<div class="exp-box" id="exp-${qIdx}">💡 <strong>व्याख्या:</strong> ${item.ansInfo}</div>
+          </div>`;
+      });
 
-        // क्विज़ वेरिएबल्स
-        let activeQuestions = [];
-        let qIndex = 0;
-        let correctCount = 0;
-        let wrongCount = 0;
-        let currentTestPDF = "";
-        let currentTestTitle = "";
+      html += `</div>`;
+      container.innerHTML = html;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-        async function loadAllData() {
-            try {
-                const res1 = await fetch(mainSheetCSV);
-                const text1 = await res1.text();
-                const rows1 = text1.split("\n").slice(1);
+    function checkAnswer(qIdx, chosenIdx) {
+      const item = activeQuizQuestions[qIdx];
+      const info = item.ansInfo.toLowerCase();
+      let correctIdx = 0;
+      if (info.includes("option b")) correctIdx = 1;
+      else if (info.includes("option c")) correctIdx = 2;
+      else if (info.includes("option d")) correctIdx = 3;
 
-                allData = rows1.map(row => {
-                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (cols.length >= 6) {
-                        return {
-                            className: cols[1].replace(/"/g, "").trim(),
-                            category: cols[2].replace(/"/g, "").trim(),
-                            subject: cols[3].replace(/"/g, "").trim(),
-                            details: cols[4].replace(/"/g, "").trim(),
-                            link: cols[5].replace(/"/g, "").trim()
-                        };
-                    }
-                }).filter(item => item && item.subject);
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`opt-${qIdx}-${i}`);
+        btn.disabled = true;
+        if (i === correctIdx) btn.classList.add("correct");
+        else if (i === chosenIdx) btn.classList.add("wrong");
+      }
 
-                // क्विज़ प्रश्न लोड करें
-                if (quizSheetCSV.startsWith("http")) {
-                    const res2 = await fetch(quizSheetCSV);
-                    const text2 = await res2.text();
-                    const rows2 = text2.split("\n").slice(1);
-                    allQuizQuestions = rows2.map(row => {
-                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                        if (cols.length >= 8) {
-                            return {
-                                testName: cols[1].replace(/"/g, "").trim(),
-                                question: cols[2].replace(/"/g, "").trim(),
-                                optA: cols[3].replace(/"/g, "").trim(),
-                                optB: cols[4].replace(/"/g, "").trim(),
-                                optC: cols[5].replace(/"/g, "").trim(),
-                                optD: cols[6].replace(/"/g, "").trim(),
-                                answerInfo: cols[7].replace(/"/g, "").trim()
-                            };
-                        }
-                    }).filter(q => q && q.question);
-                }
+      if (chosenIdx === correctIdx) userScore++;
+      answeredCount++;
+      document.getElementById("live-score").innerText = `आपका स्कोर: ${userScore} / ${activeQuizQuestions.length}`;
+      document.getElementById(`exp-${qIdx}`).style.display = "block";
+    }
 
-                document.getElementById("loading").style.display = "none";
-                renderCards();
-            } catch (err) {
-                document.getElementById("loading").innerText = "कृपया Google Sheets के सही CSV लिंक जोड़ें।";
-            }
-        }
-
-        function renderCards() {
-            const container = document.getElementById("content-container");
-            container.innerHTML = "";
-
-            const filtered = allData.filter(item => {
-                const matchSection = item.category === currentSection;
-                const matchClass = (currentClass === "All") || (item.className === currentClass);
-                return matchSection && matchClass;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = "<p style='text-align:center; width:100%;'>इस सेक्शन में सामग्री जल्द ही जोड़ी जाएगी।</p>";
-                return;
-            }
-
-            filtered.reverse().forEach(item => {
-                let buttonHTML = "";
-                if (item.category === "Notes") {
-                    buttonHTML = `<a href="${item.link}" target="_blank" class="btn">📖 नोट्स (PDF) खोलें →</a>`;
-                } else if (item.category === "Online Class") {
-                    buttonHTML = `<a href="${item.link}" target="_blank" class="btn btn-green">🎥 क्लास वीडियो देखें →</a>`;
-                } else if (item.category === "Question Paper") {
-                    buttonHTML = `<a href="${item.link}" target="_blank" class="btn">📝 प्रश्न पत्र डाउनलोड करें →</a>`;
-                } else if (item.category === "Answer Key") {
-                    buttonHTML = `<button onclick="startAdTimer('${item.link}')" class="btn btn-orange">🔒 उत्तर कुंजी देखें →</button>`;
-                } else if (item.category === "AI Online Test") {
-                    buttonHTML = `<button onclick="startAIQuiz('${item.subject}', '${item.link}')" class="btn btn-purple">🤖 AI टेस्ट शुरू करें →</button>`;
-                }
-
-                container.innerHTML += `
-                    <div class="card">
-                        <div>
-                            <span class="badge">${item.className} | ${item.category}</span>
-                            <h2>${item.subject}</h2>
-                            <p>${item.details}</p>
-                        </div>
-                        ${buttonHTML}
-                    </div>
-                `;
-            });
-        }
-
-        function selectSection(section, btn) {
-            currentSection = section;
-            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            renderCards();
-        }
-
-        function selectClass(cls, btn) {
-            currentClass = cls;
-            document.querySelectorAll(".filter-bar button").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            renderCards();
-        }
-
-        // --- AI ONLINE TEST ENGINE ---
-        function startAIQuiz(testTitle, pdfLink) {
-            activeQuestions = allQuizQuestions.filter(q => q.testName.toLowerCase() === testTitle.toLowerCase());
-            if (activeQuestions.length === 0) {
-                alert("इस टेस्ट के प्रश्न जल्द ही जोड़े जाएंगे!");
-                return;
-            }
-            qIndex = 0;
-            correctCount = 0;
-            wrongCount = 0;
-            currentTestPDF = pdfLink;
-            currentTestTitle = testTitle;
-            document.getElementById("quizModal").style.display = "flex";
-            showQuestion();
-        }
-
-        function showQuestion() {
-            const q = activeQuestions[qIndex];
-            const box = document.getElementById("quizBox");
-            box.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; color:#666;">
-                    <span>🤖 AI परीक्षक: <strong>${currentTestTitle}</strong></span>
-                    <span>प्रश्न ${qIndex + 1} / ${activeQuestions.length}</span>
-                </div>
-                <h3 style="color:#1e3c72; margin-bottom:15px;">प्र. ${qIndex + 1}: ${q.question}</h3>
-                <button class="quiz-opt" onclick="checkAnswer('Option A', this)">A) ${q.optA}</button>
-                <button class="quiz-opt" onclick="checkAnswer('Option B', this)">B) ${q.optB}</button>
-                <button class="quiz-opt" onclick="checkAnswer('Option C', this)">C) ${q.optC}</button>
-                <button class="quiz-opt" onclick="checkAnswer('Option D', this)">D) ${q.optD}</button>
-                <div id="aiFeedback" class="ai-feedback"></div>
-                <button id="nextQBtn" class="btn" style="display:none; margin-top:15px;" onclick="nextQuestion()">अगला प्रश्न (Next) →</button>
-                <button onclick="closeQuizModal()" style="margin-top:12px; background:none; border:none; color:#666; cursor:pointer; text-decoration:underline; display:block; width:100%; text-align:center;">टेस्ट बंद करें</button>
-            `;
-        }
-
-        function checkAnswer(selectedOpt, btn) {
-            const q = activeQuestions[qIndex];
-            const buttons = document.querySelectorAll(".quiz-opt");
-            buttons.forEach(b => b.disabled = true);
-
-            const feedback = document.getElementById("aiFeedback");
-            feedback.style.display = "block";
-
-            // जांचें कि सही उत्तर कौन-सा है
-            const isCorrect = q.answerInfo.toLowerCase().startsWith(selectedOpt.toLowerCase());
-
-            if (isCorrect) {
-                correctCount++;
-                btn.classList.add("correct");
-                feedback.style.background = "#d4edda";
-                feedback.style.color = "#155724";
-                feedback.innerHTML = `<strong>✅ शाबाश! आपका उत्तर बिल्कुल सही है।</strong><br>${q.answerInfo}`;
-            } else {
-                wrongCount++;
-                btn.classList.add("wrong");
-                feedback.style.background = "#f8d7da";
-                feedback.style.color = "#721c24";
-                feedback.innerHTML = `<strong>❌ यह उत्तर गलत है।</strong><br><strong>सही उत्तर:</strong> ${q.answerInfo}`;
-            }
-
-            const nextBtn = document.getElementById("nextQBtn");
-            nextBtn.style.display = "block";
-            if (qIndex === activeQuestions.length - 1) {
-                nextBtn.innerText = "📊 अंतिम परिणाम (Result) देखें →";
-            }
-        }
-
-        function nextQuestion() {
-            qIndex++;
-            if (qIndex < activeQuestions.length) {
-                showQuestion();
-            } else {
-                showFinalResult();
-            }
-        }
-
-        function showFinalResult() {
-            const total = activeQuestions.length;
-            const percent = Math.round((correctCount / total) * 100);
-            const box = document.getElementById("quizBox");
-            let pdfBtn = "";
-            if (currentTestPDF && currentTestPDF.startsWith("http")) {
-                pdfBtn = `<a href="${currentTestPDF}" target="_blank" class="btn btn-green" style="margin-top:15px;">📥 संपूर्ण उत्तर व व्याख्या PDF डाउनलोड करें →</a>`;
-            }
-
-            box.innerHTML = `
-                <div style="text-align:center;">
-                    <h2 style="color:#1e3c72; margin-bottom:10px;">🎉 AI टेस्ट रिपोर्ट कार्ड</h2>
-                    <p style="font-size:16px; margin-bottom:15px;"><strong>${currentTestTitle}</strong></p>
-                    <div style="background:#f4f7f6; padding:15px; border-radius:8px; margin-bottom:15px;">
-                        <p style="font-size:18px; color:#28a745;">✅ सही उत्तर: <strong>${correctCount}</strong></p>
-                        <p style="font-size:18px; color:#dc3545; margin-top:5px;">❌ गलत उत्तर: <strong>${wrongCount}</strong></p>
-                        <p style="font-size:20px; color:#1e3c72; margin-top:10px;">कुल स्कोर: <strong>${percent}%</strong> (${correctCount}/${total})</p>
-                    </div>
-                    ${pdfBtn}
-                    <button onclick="closeQuizModal()" class="btn" style="margin-top:10px; background:#6c757d;">बंद करें</button>
-                </div>
-            `;
-        }
-
-        function closeQuizModal() {
-            document.getElementById("quizModal").style.display = "none";
-        }
-
-        // --- ANSWER KEY AD TIMER ---
-        function startAdTimer(link) {
-            pendingAnswerLink = link;
-            document.getElementById("adModal").style.display = "flex";
-            document.getElementById("unlockBtn").style.display = "none";
-            let timeLeft = 10;
-            document.getElementById("timerText").innerText = `कृपया ${timeLeft} सेकंड प्रतीक्षा करें...`;
-
-            clearInterval(countdownInterval);
-            countdownInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft > 0) {
-                    document.getElementById("timerText").innerText = `कृपया ${timeLeft} सेकंड प्रतीक्षा करें...`;
-                } else {
-                    clearInterval(countdownInterval);
-                    document.getElementById("timerText").innerText = "आपकी उत्तर कुंजी तैयार है!";
-                    document.getElementById("unlockBtn").style.display = "block";
-                }
-            }, 1000);
-        }
-
-        function openFinalAnswer() {
-            window.open(pendingAnswerLink, "_blank");
-            closeAdModal();
-        }
-
-        function closeAdModal() {
-            clearInterval(countdownInterval);
-            document.getElementById("adModal").style.display = "none";
-        }
-
-        loadAllData();
-    </script>
+    // पेज खुलते ही डेटा लोड करें
+    loadAllData();
+  </script>
 </body>
 </html>
